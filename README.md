@@ -2,7 +2,46 @@
 
 A modern, functional, and stylish Single Page Application (SPA) messenger built with Next.js, TypeScript, and WebRTC.
 
+**🚀 [Quick Start Guide →](./QUICKSTART.md)**
+
+## ✨ What's New
+
+- ✅ **Real Authentication** - Email/password signup & login
+- ✅ **Demo Mode** - Works instantly without setup
+- ✅ **Firebase Ready** - Add credentials for real database
+- ✅ **Zero Config Deployment** - Deploy to Vercel immediately
+- ✅ **Automatic Mode Detection** - Firebase or Demo mode automatically
+- ✅ **User Persistence** - Sessions persist across page reloads
+
+## 🎯 Getting Started
+
+### Fastest Way (Demo Mode)
+```bash
+npm install
+npm run dev
+# Visit http://localhost:3000
+# Sign up with any email/password
+# Done! 🎉
+```
+
+### With Firebase (Production)
+```bash
+# 1. Set Firebase env vars in .env.local
+# 2. npm run dev
+# 3. Create real account
+# 4. Data synced to Firebase
+```
+
+See **[QUICKSTART.md](./QUICKSTART.md)** for detailed setup.
+
 ## Features
+
+### 🔐 Authentication & User Management
+- **Email/Password Authentication** - Signup and login
+- **Demo Mode** - Works instantly, no backend needed
+- **Firebase Integration** - Real multi-user support (optional)
+- **Session Persistence** - Remember user across sessions
+- **Automatic Mode Detection** - Firebase or Demo mode automatically
 
 ### 🎨 Design & Style
 - **Contrast Color Scheme**: Orange (#FF6700) accents on dark black/gray (#000000, #121212)
@@ -90,27 +129,46 @@ npm start
 - Safari 14+
 - Edge 90+
 
+## 📖 Documentation
+
+Complete guides available:
+- **[QUICKSTART.md](./QUICKSTART.md)** - Get started in 3 steps
+- **[AUTHENTICATION.md](./AUTHENTICATION.md)** - Auth system & Firebase setup
+- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Deployment strategies
+- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - What was implemented
+
+## 🚀 Deploy
+
+### To Vercel (Recommended)
+```bash
+git push origin main
+# Vercel auto-deploys
+# Works with demo mode immediately
+# Add Firebase env vars for production
+```
+
+### Local Deployment
+```bash
+npm run build
+npm start
+```
+
+## 🤝 Contributing
+
+Contributions welcome! Feel free to:
+- Report bugs
+- Suggest features
+- Submit pull requests
+
+## 📄 License
+
+MIT License - Use freely!
+
 ---
 
 **Fox Messenger** - Modern messaging for the modern web 🦊
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🚀 **[Get Started Now →](./QUICKSTART.md)**
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 

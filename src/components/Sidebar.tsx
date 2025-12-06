@@ -1,9 +1,10 @@
 'use client';
 
 import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { LogOut, Settings, MessageCircle, Users, Phone } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const navigation = [
   { name: 'Chats', href: '/chats', icon: MessageCircle },
@@ -13,10 +14,22 @@ const navigation = [
 ];
 
 export function Sidebar() {
+  const router = useRouter();
   const pathname = usePathname();
   const currentUser = useAppStore((s) => s.currentUser);
   const isDeveloperMode = useAppStore((s) => s.isDeveloperMode);
   const toggleDeveloperMode = useAppStore((s) => s.toggleDeveloperMode);
+  const { logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    try {
+      logout();
+      localStorage.removeItem('fox_auth_user');
+      router.push('/auth');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <div className="h-screen w-64 bg-fox-black border-r border-fox-gray-800 flex flex-col">
@@ -92,7 +105,10 @@ export function Sidebar() {
           <span className="text-lg">⚙️</span>
           <span>{isDeveloperMode ? 'Dev Mode ON' : 'Dev Mode'}</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-fox-gray-500 hover:bg-fox-gray-800 transition-colors">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-fox-gray-500 hover:bg-fox-gray-800 hover:text-red-400 transition-colors"
+        >
           <LogOut size={18} />
           <span className="text-sm">Logout</span>
         </button>

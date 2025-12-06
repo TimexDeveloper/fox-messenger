@@ -7,6 +7,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { useEffect } from 'react';
 import { UserPlus, MessageCircle } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 const MOCK_USER = {
   id: 'user-123',
   username: 'Your Name',
