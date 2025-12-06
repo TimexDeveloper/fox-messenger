@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { isFirebaseConfigured } from '@/lib/firebase';
+import { sendMessage, subscribeToMessages } from '@/lib/firestore-messages';
 import { Send, Paperclip, Smile, Mic } from 'lucide-react';
 import { Message } from '@/store/useAppStore';
 
@@ -10,10 +13,47 @@ export function ChatWindow() {
   const chats = useAppStore((s) => s.chats);
   const addMessage = useAppStore((s) => s.addMessage);
   const currentUser = useAppStore((s) => s.currentUser);
+  const { user: authUser } = useAuthStore();
   const [messageText, setMessageText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   const chat = chats.find((c) => c.id === selectedChatId);
+
+  // Subscribe to real-time messages
+  useEffect(() => {
+    if (!selectedChatId || !isFirebaseConfigured) return;
+
+    const unsubscribe = subscribeToMessages(selectedChatId, (messages) => {
+      // Update chats with new messages
+      const chatIndex = chats.findIndex(c => c.id === selectedChatId);
+      if (chatIndex !== -1) {
+        const updatedChats = [...chats];
+        updatedChats[chatIndex] = {
+          ...updatedChats[chatIndex],
+          messages,
+          lastMessage: messages[messages.length - 1],
+          unread: 0,
+        };
+        useAppStore.setState({ chats: updatedChats });
+      }
+    });
+
+    unsubscribeRef.current = unsubscribe;
+
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+    };
+  }, [selectedChatId]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chat?.messages.length]);
 
   if (!chat || !currentUser) {
     return (
@@ -26,18 +66,37 @@ export function ChatWindow() {
     );
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageText.trim()) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: currentUser,
-      text: messageText,
-      timestamp: new Date(),
-    };
+    setIsLoading(true);
 
-    addMessage(selectedChatId!, newMessage);
-    setMessageText('');
+    try {
+      if (isFirebaseConfigured && authUser?.id && selectedChatId) {
+        // Send to Firebase
+        await sendMessage(
+          selectedChatId,
+          authUser.id,
+          authUser.username,
+          authUser.avatar,
+          messageText
+        );
+      } else {
+        // Demo mode - add locally
+        const newMessage: Message = {
+          id: Date.now().toString(),
+          sender: currentUser,
+          text: messageText,
+          timestamp: new Date(),
+        };
+        addMessage(selectedChatId!, newMessage);
+      }
+      setMessageText('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAttachment = () => {
@@ -142,13 +201,20 @@ export function ChatWindow() {
 
           <button
             onClick={handleSendMessage}
-            disabled={!messageText.trim()}
+            disabled={!messageText.trim() || isLoading}
             className="p-2 bg-fox-orange hover:bg-fox-orange hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all"
           >
-            <Send size={20} className="text-fox-black" />
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-fox-black border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Send size={20} className="text-fox-black" />
+            )}
           </button>
         </div>
       </div>
+
+      {/* Scroll anchor */}
+      <div ref={messagesEndRef} />
     </div>
   );
 }
